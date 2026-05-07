@@ -4,6 +4,7 @@ import com.example.logparser.handler.LogHandler;
 import com.example.logparser.model.ParsedLogLine;
 import com.example.logparser.parser.LogLineParser;
 import com.example.logparser.writer.JsonOutputWriter;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.io.IOException;
@@ -18,6 +19,7 @@ public class LogProcessingService {
     private final LogHandler rootHandler;
     private final JsonOutputWriter jsonOutputWriter;
 
+    @Autowired
     public LogProcessingService(LogLineParser parser, JsonOutputWriter jsonOutputWriter) {
         this.parser = parser;
         this.rootHandler = null;

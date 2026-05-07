@@ -2,6 +2,7 @@ package com.example.logparser.writer;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.SerializationFeature;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -15,6 +16,7 @@ public class JsonOutputWriter {
     private final ObjectMapper objectMapper;
     private final Path outputDirectory;
 
+    @Autowired
     public JsonOutputWriter(@Value("${log-parser.output-directory:.}") String outputDirectory) {
         this(Path.of(outputDirectory));
     }
