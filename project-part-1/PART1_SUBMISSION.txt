@@ -1,0 +1,118 @@
+PART I — Log Parser CLI (Design)
+
+================================================================================
+1. Describe what problem you’re solving
+================================================================================
+
+You need a command-line tool that reads a plain-text log file (one line per entry). Lines are not all the same “type”: some describe APM-style metrics (metric + numeric value), some are application events (level + message), and some are HTTP request records (request_method, request_url, response_status, response_time_ms). The tool must classify each successfully parsed line into the right category, aggregate statistics separately for each category, and write three JSON files (apm.json, application.json, request.json). Lines that are corrupted or not in the supported shape must be ignored safely without crashing. The design should also make it reasonable to add new log types or formats later without rewriting the whole program.
+
+
+================================================================================
+2. What design pattern(s) will be used to solve this?
+================================================================================
+
+Chain of Responsibility — Each line is turned into a structured ParsedLogLine and passed into a chain of handlers (e.g. try APM rules first, then application, then request, optionally a terminal “unknown” handler). The first handler that recognizes the line processes it; otherwise the line is passed along the chain or dropped at the end. This is the main pattern for classification.
+
+Separation of concerns (often described with Single Responsibility) — Parsing, classification, per-type aggregation, and JSON output live in different classes/packages so each part can change independently.
+
+“Strategy-like” aggregation — Each log family has its own aggregator object with different rules (APM: min/median/average/max by metric; application: counts by severity; request: response-time stats and status buckets per route). This is not always named “Strategy” in code, but it behaves like pluggable aggregation policies per category.
+
+The primary pattern called out for the assignment is Chain of Responsibility for log type classification.
+
+
+================================================================================
+3. Describe the consequences of using this/these pattern(s)
+================================================================================
+
+Benefits
+
+• Extensibility: You can add a new handler (e.g. “SecurityLogHandler”) in the chain without changing the parser’s core loop, as long as the new type has clear field rules.
+
+• Maintainability: Classification rules stay localized in small classes instead of one giant if / else method.
+
+• Testability: You can unit-test the parser, each handler, each aggregator, and an end-to-end run separately.
+
+• Safe handling of bad input: Malformed lines fail at parse time; unrecognized but parseable lines can fall through the chain and be ignored explicitly.
+
+Tradeoffs
+
+• More classes and wiring than a single monolithic parser class.
+
+• Order of handlers matters — wrong order can misclassify (e.g. a too-generic handler early in the chain could “eat” lines meant for a more specific type).
+
+• Not every real-world log format is key=value; supporting arbitrary Apache/nginx lines would need a different parser or adapter, not just more handlers.
+
+
+================================================================================
+4. Class diagram (Chain of Responsibility + supporting classes)
+================================================================================
+
+Below is a text outline of the class diagram (Mermaid is used in the Markdown companion). It shows the handler chain and how it connects to parsing, context, aggregators, and JSON output.
+
+LogParserCliApplication
+  + main
+
+LogProcessingService
+  - parser: LogLineParser
+  - rootHandler: LogHandler
+  - writer: JsonOutputWriter
+  + process
+
+LogLineParser
+  + parse: Optional<ParsedLogLine>
+
+ParsedLogLine
+  + fields: Map<String, String>
+
+<<interface>> LogHandler
+  + setNext
+  + handle
+
+AbstractLogHandler
+  - next: LogHandler
+  + setNext
+  # delegate
+
+ApmLogHandler
+  + handle
+
+ApplicationLogHandler
+  + handle
+
+RequestLogHandler
+  + handle
+
+UnknownLogHandler
+  + handle
+
+LogProcessingContext
+  + apmAggregator: ApmAggregator
+  + applicationAggregator: ApplicationAggregator
+  + requestAggregator: RequestAggregator
+
+ApmAggregator
+  + add
+  + toOutput: Map
+
+ApplicationAggregator
+  + add
+  + toOutput: Map
+
+RequestAggregator
+  + add
+  + toOutput: Map
+
+JsonOutputWriter
+  + write
+
+Relationships (summary):
+  LogParserCliApplication uses LogProcessingService
+  LogProcessingService uses LogLineParser, root LogHandler, JsonOutputWriter; creates LogProcessingContext per run
+  LogLineParser builds ParsedLogLine
+  LogHandler <|.. AbstractLogHandler
+  AbstractLogHandler <|-- ApmLogHandler, ApplicationLogHandler, RequestLogHandler, UnknownLogHandler
+  Each handler may point to “next” handler in the chain
+
+Chain of Responsibility flow (short): LogProcessingService parses each line to ParsedLogLine, then ApmLogHandler.handle. If it does not match APM, it delegates to ApplicationLogHandler, then RequestLogHandler, then optionally UnknownLogHandler (no-op sink). Handlers update LogProcessingContext aggregators; JsonOutputWriter writes the final maps to disk.
+
+Note: If your final submission removed UnknownLogHandler, state in the write-up that the chain ends at RequestLogHandler and unmatched lines stop at the last handler with no aggregation; omit UnknownLogHandler from the diagram accordingly. Align the submitted PDF with the code you actually turn in.
