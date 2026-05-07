@@ -1,0 +1,21 @@
+timestamp=2026-03-10T09:01:02Z host=app-1 metric=cpu value=10.0
+timestamp=2026-03-10T09:01:08Z host=app-1 metric=cpu value=20.0
+timestamp=2026-03-10T09:01:11Z host=app-1 metric=cpu value=30.0
+timestamp=2026-03-10T09:01:14Z host=app-1 metric=memory value=100
+timestamp=2026-03-10T09:01:15Z host=app-1 metric=memory value=300
+timestamp=2026-03-10T09:01:22Z host=app-1 level=INFO message="service started"
+timestamp=2026-03-10T09:01:25Z host=app-1 level=WARN message="dependency latency high"
+timestamp=2026-03-10T09:01:28Z host=app-1 level=ERROR message="unhandled exception"
+timestamp=2026-03-10T09:01:31Z host=app-1 request_method=GET request_url=/users response_status=200 response_time_ms=50
+timestamp=2026-03-10T09:01:35Z host=app-1 request_method=GET request_url=/users response_status=200 response_time_ms=70
+timestamp=2026-03-10T09:01:38Z host=app-1 request_method=GET request_url=/users response_status=404 response_time_ms=30
+timestamp=2026-03-10T09:01:42Z host=app-1 request_method=GET request_url=/users response_status=500 response_time_ms=40
+timestamp=2026-03-10T09:01:45Z host=app-1 request_method=POST request_url=/users response_status=204 response_time_ms=60
+timestamp=2026-03-10T09:01:48Z host=app-1 request_method=POST request_url=/users response_status=502 response_time_ms=90
+timestamp=2026-03-10T09:02:01Z host=app-2 request_method=POST request_url=/orders response_status=201 response_time_ms=110
+timestamp=2026-03-10T09:02:05Z host=app-2 request_method=POST request_url=/orders response_status=204 response_time_ms=120
+timestamp=2026-03-10T09:02:08Z host=app-2 request_method=GET request_url=/orders response_status=404 response_time_ms=140
+timestamp=2026-03-10T09:02:12Z host=app-2 request_method=GET request_url=/orders response_status=503 response_time_ms=200
+metric=cpu value="bad
+request_method=GET request_url=/users response_time_ms=999
+this is malformed

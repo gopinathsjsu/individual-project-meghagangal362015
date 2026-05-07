@@ -2,6 +2,7 @@
 /.m2/
 *.class
 *.log
+!src/test/resources/*.log
 .DS_Store
 apm.json
 application.json

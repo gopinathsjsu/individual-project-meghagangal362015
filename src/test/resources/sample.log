@@ -1,0 +1,12 @@
+metric=cpu value=34.5
+metric=cpu value=45.5
+metric=cpu value=20.0
+metric=memory value=78
+level=INFO message="service started"
+level=ERROR message="db timeout"
+request_method=GET request_url=/users response_status=200 response_time_ms=100
+request_method=GET request_url=/users response_status=500 response_time_ms=350
+request_method=POST request_url=/orders response_status=404 response_time_ms=210
+this is malformed
+level=INFO message=no-quotes-ok
+request_method=GET request_url=/users response_status=200 response_time_ms=120

@@ -1,0 +1,4 @@
+timestamp=2026-03-11T10:00:01Z host=app-1 level=INFO message="service started"
+timestamp=2026-03-11T10:00:05Z host=app-1 level=INFO message="background job scheduled"
+timestamp=2026-03-11T10:00:09Z host=app-1 level=WARN message="cache hit rate low"
+timestamp=2026-03-11T10:00:12Z host=app-1 level=ERROR message="db connection timeout"

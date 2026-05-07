@@ -1,0 +1,21 @@
+timestamp=2026-03-10T09:01:02Z metric=queue_depth host=app-east-01 value=4
+timestamp=2026-03-10T09:01:08Z level=INFO message="Config reload skipped; checksum unchanged" host=app-east-01
+timestamp=2026-03-10T09:01:11Z request_method=GET request_url=/v1/health/ready response_status=200 response_time_ms=8 host=app-east-01
+timestamp=2026-03-10T09:01:14Z metric=heap_used_pct host=app-east-01 value=61.25
+timestamp=2026-03-10T09:01:19Z level=WARN message="Retry budget low for outbound payments" host=app-east-01
+timestamp=2026-03-10T09:01:22Z request_method=POST request_url=/v1/payments/capture response_status=201 response_time_ms=142 host=app-east-01
+timestamp=2026-03-10T09:01:27Z metric=disk_io_wait_ms host=app-east-01 value=3
+timestamp=2026-03-10T09:01:31Z level=DEBUG message="Cache warm-up finished for region us-east" host=app-east-01
+timestamp=2026-03-10T09:01:35Z request_method=GET request_url=/v1/catalog/items response_status=429 response_time_ms=95 host=app-east-01
+timestamp=2026-03-10T09:01:40Z metric=thread_pool_active host=app-west-02 value=17
+timestamp=2026-03-10T09:01:44Z level=ERROR message="Primary DB pool exhausted after 3s" host=app-west-02
+timestamp=2026-03-10T09:01:48Z request_method=DELETE request_url=/v1/sessions/abc123 response_status=204 response_time_ms=33 host=app-west-02
+timestamp=2026-03-10T09:01:52Z metric=gc_pause_ms host=app-west-02 value=42
+timestamp=2026-03-10T09:01:56Z level=INFO message="Rolling deploy marker written" host=app-west-02
+timestamp=2026-03-10T09:02:01Z request_method=GET request_url=/v1/health/ready response_status=200 response_time_ms=11 host=app-west-02
+timestamp=2026-03-10T09:02:05Z metric=queue_depth host=app-west-02 value=9
+timestamp=2026-03-10T09:02:09Z level=INFO message="Batch exporter flushed 120 spans" host=app-west-02
+timestamp=2026-03-10T09:02:13Z request_method=POST request_url=/v1/payments/capture response_status=502 response_time_ms=410 host=app-west-02
+timestamp=2026-03-10T09:02:18Z metric=heap_used_pct host=app-west-02 value=74.0
+not a valid key value line for parser smoke test
+timestamp=2026-03-10T09:02:22Z request_method=PUT request_url=/v1/inventory/sku-8841 response_status=400 response_time_ms=56 host=app-west-02
