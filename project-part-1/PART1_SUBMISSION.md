@@ -43,8 +43,9 @@ classDiagram
     class LogProcessingService {
         -LogLineParser parser
         -LogHandler rootHandler
-        -JsonOutputWriter writer
+        -JsonOutputWriter jsonOutputWriter
         +process(Path inputFile)
+        +process(Path inputFile, LogHandler rootHandler)
     }
 
     class LogLineParser {

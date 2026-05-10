@@ -43,8 +43,9 @@ LogParserCliApplication
 LogProcessingService
   - parser: LogLineParser
   - rootHandler: LogHandler
-  - writer: JsonOutputWriter
-  + process
+  - jsonOutputWriter: JsonOutputWriter
+  + process(Path)
+  + process(Path, LogHandler)
 
 LogLineParser
   + parse: Optional<ParsedLogLine>
