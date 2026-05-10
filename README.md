@@ -10,7 +10,7 @@ All output files are always written, even when empty.
 
 ## Part I — Design & class diagram
 
-Part I (problem statement, patterns, trade-offs, and the **class diagram**) lives in **[`project-part-1/PART1_SUBMISSION.md`](project-part-1/PART1_SUBMISSION.md)**. Section **4** contains the Mermaid diagram; view that file on GitHub or in any Markdown preview that renders Mermaid so the diagram appears as a graphic (unlike a plain PDF export).
+Part I (problem statement, patterns, trade-offs, and the **class diagram**) lives in **[`project-part-1/PART1_SUBMISSION.md`](project-part-1/PART1_SUBMISSION.md)**. Section **4** contains the Mermaid diagram; view that file on GitHub or in any Markdown preview **that supports Mermaid** so the diagram renders as a figure. **[`project-part-1/README.md`](project-part-1/README.md)** explains how the `.md`, `.txt`, and `.pdf` copies relate.
 
 ## Build
 
