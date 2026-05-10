@@ -8,7 +8,7 @@ We need a **command-line tool** that reads a **plain-text log file** (one line p
 
 ## 2. What design pattern(s) will be used to solve this?
 
-- **Chain of Responsibility** — Each line is turned into a structured `ParsedLogLine` and passed into a **chain of handlers** (e.g. try APM rules first, then application, then request, optionally a terminal “unknown” handler). The **first handler that recognizes** the line processes it; otherwise the line is passed **along the chain** or dropped at the end. This is the main pattern for **classification**.
+- **Chain of Responsibility** — Each line is turned into a structured `ParsedLogLine` and passed into a **chain of handlers** (APM → application → request). The **first handler that recognizes** the line processes it; otherwise the line is **delegated** along the chain. After the last handler (`RequestLogHandler`), lines that still do not match have **no successor**, so they are **ignored** (no aggregation). This is the main pattern for **classification**.
 
 - **Separation of concerns** (often described with **Single Responsibility**) — **Parsing**, **classification**, **per-type aggregation**, and **JSON output** live in different classes/packages so each part can change independently.
 
@@ -86,10 +86,6 @@ classDiagram
         +handle(ParsedLogLine, LogProcessingContext)
     }
 
-    class UnknownLogHandler {
-        +handle(ParsedLogLine, LogProcessingContext)
-    }
-
     class LogProcessingContext {
         +apmAggregator ApmAggregator
         +applicationAggregator ApplicationAggregator
@@ -126,7 +122,6 @@ classDiagram
     AbstractLogHandler <|-- ApmLogHandler
     AbstractLogHandler <|-- ApplicationLogHandler
     AbstractLogHandler <|-- RequestLogHandler
-    AbstractLogHandler <|-- UnknownLogHandler
 
     ApmLogHandler --> LogHandler : next
     ApplicationLogHandler --> LogHandler : next
@@ -137,8 +132,4 @@ classDiagram
     LogProcessingContext --> RequestAggregator
 ```
 
-**Chain of Responsibility flow:** `LogProcessingService` parses each line to a `ParsedLogLine`, then invokes the **root** handler (`ApmLogHandler`). Each handler either **updates** the appropriate aggregator on `LogProcessingContext` or **delegates** to the next handler. Optional **`UnknownLogHandler`** ends the chain with a no-op for parseable but unrecognized lines. Finally, **`JsonOutputWriter`** writes aggregator results to `apm.json`, `application.json`, and `request.json`.
-
----
-
-*Note: If your submitted code omits `UnknownLogHandler`, remove that class from the diagram and state that the chain ends at `RequestLogHandler`.*
+**Chain of Responsibility flow:** `LogProcessingService` parses each line to a `ParsedLogLine`, then invokes the **root** handler (`ApmLogHandler`). Each handler either **updates** the appropriate aggregator on `LogProcessingContext` or **delegates** to the next handler. The chain **ends** at `RequestLogHandler` (`HandlerChainConfiguration`): if that handler cannot match, `delegate` runs with **no** next handler, so the line is dropped without aggregation. Finally, **`JsonOutputWriter`** writes aggregator results to `apm.json`, `application.json`, and `request.json`.

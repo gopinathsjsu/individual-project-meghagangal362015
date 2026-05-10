@@ -11,7 +11,7 @@ You need a command-line tool that reads a plain-text log file (one line per entr
 2. What design pattern(s) will be used to solve this?
 ================================================================================
 
-Chain of Responsibility — Each line is turned into a structured ParsedLogLine and passed into a chain of handlers (e.g. try APM rules first, then application, then request, optionally a terminal “unknown” handler). The first handler that recognizes the line processes it; otherwise the line is passed along the chain or dropped at the end. This is the main pattern for classification.
+Chain of Responsibility — Each line is turned into a structured ParsedLogLine and passed into a chain of handlers (APM → application → request). The first handler that recognizes the line processes it; otherwise the line is delegated along the chain. After RequestLogHandler, there is no next handler, so parseable lines that match none of the three types are ignored (no aggregation). This is the main pattern for classification.
 
 Separation of concerns (often described with Single Responsibility) — Parsing, classification, per-type aggregation, and JSON output live in different classes/packages so each part can change independently.
 
@@ -82,9 +82,6 @@ ApplicationLogHandler
 RequestLogHandler
   + handle
 
-UnknownLogHandler
-  + handle
-
 LogProcessingContext
   + apmAggregator: ApmAggregator
   + applicationAggregator: ApplicationAggregator
@@ -110,9 +107,7 @@ Relationships (summary):
   LogProcessingService uses LogLineParser, root LogHandler, JsonOutputWriter; creates LogProcessingContext per run
   LogLineParser builds ParsedLogLine
   LogHandler <|.. AbstractLogHandler
-  AbstractLogHandler <|-- ApmLogHandler, ApplicationLogHandler, RequestLogHandler, UnknownLogHandler
-  Each handler may point to “next” handler in the chain
+  AbstractLogHandler <|-- ApmLogHandler, ApplicationLogHandler, RequestLogHandler
+  Each handler may point to “next” handler in the chain (apm → app → request; request has no next)
 
-Chain of Responsibility flow (short): LogProcessingService parses each line to ParsedLogLine, then ApmLogHandler.handle. If it does not match APM, it delegates to ApplicationLogHandler, then RequestLogHandler, then optionally UnknownLogHandler (no-op sink). Handlers update LogProcessingContext aggregators; JsonOutputWriter writes the final maps to disk.
-
-Note: If your final submission removed UnknownLogHandler, state in the write-up that the chain ends at RequestLogHandler and unmatched lines stop at the last handler with no aggregation; omit UnknownLogHandler from the diagram accordingly. Align the submitted PDF with the code you actually turn in.
+Chain of Responsibility flow (short): LogProcessingService parses each line to ParsedLogLine, then ApmLogHandler.handle. If it does not match APM, it delegates to ApplicationLogHandler, then RequestLogHandler. If RequestLogHandler cannot match, delegate does nothing (no next handler), so the line is ignored. Handlers update LogProcessingContext aggregators; JsonOutputWriter writes the final maps to disk.
